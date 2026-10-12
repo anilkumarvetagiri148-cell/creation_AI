@@ -1,0 +1,6 @@
+{
+  "name": "CreatorConnect AI",
+  "description": "AI-native marketplace connecting AI creators with brands and creative agencies — featuring creator discovery, AI portfolios, briefs, matching, proposals, and collaboration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
