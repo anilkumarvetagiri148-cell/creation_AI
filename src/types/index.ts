@@ -12,7 +12,33 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export type IndustryCategory =
+  | 'Finance & Investing'
+  | 'Education & E-Learning'
+  | 'Business & Entrepreneurship'
+  | 'Technology & AI'
+  | 'Gaming & Esports'
+  | 'Health & Fitness'
+  | 'Food & Cooking'
+  | 'Travel & Tourism'
+  | 'Fashion & Beauty'
+  | 'Digital Marketing'
+  | 'Social Media Influencers'
+  | 'Entertainment & Comedy'
+  | 'Science & Research'
+  | 'Real Estate'
+  | 'E-commerce & Product Advertising'
+  | 'Photography & Videography'
+  | 'Animation & Motion Graphics'
+  | 'Music & Audio'
+  | 'Lifestyle & Personal Development'
+  | 'News & Media'
+  | 'Automotive'
+  | 'Agriculture & Farming'
+  | 'Environment & Sustainability';
+
 export type SpecializationCategory =
+  | IndustryCategory
   | 'AI Video & Commercials'
   | 'AI Image & Photography'
   | 'AI Influencers & Avatars'
@@ -20,19 +46,26 @@ export type SpecializationCategory =
   | 'AI Animation & Motion'
   | 'AI Voice & Audio'
   | 'AI Branding & Concept Art'
-  | 'AI Storytelling & Narrative';
+  | 'AI Storytelling & Narrative'
+  | string;
 
 export type AvailabilityStatus = 'available' | 'busy' | 'booked';
+export type CreatorExperienceLevel = 'Beginner' | 'Intermediate' | 'Expert';
+export type ContentFormat = 'Video & Motion' | 'Stills & Photography' | 'Audio & Voice' | '3D & Virtual';
 
 export interface CreatorProfileDetails {
   userId: string;
   title: string;
+  industry?: IndustryCategory | string;
   specialization: SpecializationCategory;
   secondarySpecializations: SpecializationCategory[];
   skills: string[];
   aiTools: string[];
   hourlyRate: number;
-  projectStartingRate: number;
+  projectStartingRate: number; // in INR (₹)
+  currency?: string; // 'INR'
+  experienceLevel?: CreatorExperienceLevel;
+  contentFormat?: ContentFormat;
   availability: AvailabilityStatus;
   experienceYears: number;
   completedCampaigns: number;

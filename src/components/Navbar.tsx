@@ -14,15 +14,20 @@ import {
   ChevronDown,
   LogOut,
   ExternalLink,
-  Flame
+  Flame,
+  Palette,
+  Check
 } from 'lucide-react';
 import { UserProfile, NotificationItem } from '../types/index.js';
+import { BackgroundTheme, THEME_OPTIONS } from './BackgroundDecorations.js';
 
 interface NavbarProps {
   currentUser: UserProfile;
   notifications: NotificationItem[];
   unreadMessagesCount: number;
   currentView: string;
+  currentTheme?: BackgroundTheme;
+  onThemeChange?: (theme: BackgroundTheme) => void;
   onNavigate: (view: string, params?: any) => void;
   onSwitchDemo: (role: 'creator' | 'brand' | 'admin') => void;
   onOpenAuth: () => void;
@@ -35,6 +40,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   notifications,
   unreadMessagesCount,
   currentView,
+  currentTheme = 'nebula',
+  onThemeChange,
   onNavigate,
   onSwitchDemo,
   onOpenAuth,
@@ -44,6 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
   const unreadNotifs = notifications.filter((n) => !n.read);
 
@@ -185,6 +193,56 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Theme Atmosphere Selector */}
+            {onThemeChange && (
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setThemeDropdownOpen(!themeDropdownOpen);
+                    setNotificationsOpen(false);
+                    setDemoDropdownOpen(false);
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#17132E]/90 hover:bg-[#201A40] border border-[#7C4DFF]/30 text-[#B9B3D0] hover:text-white transition-all text-xs"
+                  title="Change background atmosphere theme"
+                >
+                  <Palette className="w-3.5 h-3.5 text-[#9D7BFF]" />
+                  <span className="hidden md:inline text-[11px] font-semibold text-white/90">Theme</span>
+                </button>
+
+                {themeDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-xl bg-[#120E29] border border-[#7C4DFF]/40 shadow-2xl p-2 z-50 backdrop-blur-xl space-y-1">
+                    <div className="px-2 py-1 text-[10px] font-bold text-[#B9B3D0] uppercase tracking-wider border-b border-[#2A2453]/60 mb-1">
+                      Background Atmosphere
+                    </div>
+                    {THEME_OPTIONS.map((opt) => {
+                      const isSel = currentTheme === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => {
+                            onThemeChange(opt.id);
+                            setThemeDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                            isSel ? 'bg-[#7C4DFF]/25 border border-[#7C4DFF] text-white font-bold' : 'hover:bg-[#1C1640] text-[#B9B3D0]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center -space-x-1">
+                              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: opt.accentColors[0] }} />
+                              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: opt.accentColors[1] }} />
+                            </div>
+                            <span>{opt.name}</span>
+                          </div>
+                          {isSel && <Check className="w-3.5 h-3.5 text-[#00E5FF]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Notifications Bell */}
             <div className="relative">

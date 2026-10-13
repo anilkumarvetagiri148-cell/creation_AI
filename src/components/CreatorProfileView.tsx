@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { CreatorWithProfile, PortfolioProject, Review } from '../types/index.js';
 
+import { SafeImage } from './SafeImage.js';
+
 interface CreatorProfileViewProps {
   creator: CreatorWithProfile & { reviews: Review[] };
   onBack: () => void;
@@ -42,6 +44,8 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
 
   const { user, profile, portfolio, reviews } = creator;
+
+  const formatINR = (val: number) => `₹${val.toLocaleString('en-IN')}`;
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -107,10 +111,10 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
         {/* Banner Gradient / Artwork */}
         <div className="h-44 sm:h-56 w-full relative bg-gradient-to-r from-[#17132E] via-[#201A40] to-[#0B081D] overflow-hidden">
           {portfolio[0] && (
-            <img
+            <SafeImage
               src={portfolio[0].mediaUrl}
               alt="Banner"
-              className="w-full h-full object-cover opacity-30 blur-sm scale-105"
+              className="w-full h-full object-cover opacity-35 blur-sm scale-105"
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#17132E] via-transparent to-transparent" />
@@ -122,9 +126,10 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
             {/* Avatar & Title */}
             <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5">
               <div className="relative">
-                <img
+                <SafeImage
                   src={user.avatar}
                   alt={user.name}
+                  fallbackType="avatar"
                   className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover ring-4 ring-[#17132E] shadow-2xl"
                 />
                 <span
@@ -140,7 +145,14 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-white">{user.name}</h1>
                   <CheckCircle2 className="w-5 h-5 text-[#00E5FF]" />
                 </div>
-                <p className="text-sm font-medium text-[#9D7BFF]">{profile.title}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-medium text-[#9D7BFF]">{profile.title}</p>
+                  {profile.industry && (
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#7C4DFF]/20 text-white border border-[#7C4DFF]/30">
+                      {profile.industry}
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-4 text-xs text-[#B9B3D0] pt-1">
                   <span className="flex items-center gap-1">
                     <MapPin className="w-3.5 h-3.5 text-[#7C4DFF]" /> {user.location}
@@ -192,12 +204,12 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
                 className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#7C4DFF] to-[#9D7BFF] hover:from-[#6A3DE8] hover:to-[#8C66FF] text-white font-semibold text-xs shadow-lg shadow-[#7C4DFF]/30 transition-all flex items-center justify-center gap-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Invite to Campaign</span>
+                <span>Hire / Invite</span>
               </button>
             </div>
           </div>
 
-          {/* Quick Stats Bar */}
+          {/* Quick Stats Bar in INR */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-[#2A2453]/60">
             <div>
               <span className="text-[11px] text-[#B9B3D0] block">Client Rating</span>
@@ -218,14 +230,14 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
             <div>
               <span className="text-[11px] text-[#B9B3D0] block">Project Starting Rate</span>
               <div className="font-extrabold text-white text-base mt-0.5">
-                ${profile.projectStartingRate} <span className="text-xs text-[#B9B3D0] font-normal">/ milestone</span>
+                {formatINR(profile.projectStartingRate)} <span className="text-xs text-[#B9B3D0] font-normal">/ milestone</span>
               </div>
             </div>
 
             <div>
               <span className="text-[11px] text-[#B9B3D0] block">Hourly Rate</span>
               <div className="font-extrabold text-white text-base mt-0.5">
-                ${profile.hourlyRate} <span className="text-xs text-[#B9B3D0] font-normal">/ hr</span>
+                {formatINR(profile.hourlyRate)} <span className="text-xs text-[#B9B3D0] font-normal">/ hr</span>
               </div>
             </div>
           </div>
@@ -288,7 +300,7 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
               >
                 <div>
                   <div className="relative h-56 overflow-hidden bg-[#17132E]">
-                    <img
+                    <SafeImage
                       src={project.mediaUrl}
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -345,7 +357,7 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
                 <div>
                   <h3 className="text-base font-bold text-white">{pkg.name}</h3>
                   <div className="text-2xl font-extrabold text-white mt-1">
-                    ${pkg.price}
+                    {formatINR(pkg.price)}
                   </div>
                   <span className="text-[11px] text-[#9D7BFF] font-medium block mt-0.5">
                     Estimated {pkg.turnaround}
@@ -500,7 +512,7 @@ export const CreatorProfileView: React.FC<CreatorProfileViewProps> = ({
             </button>
 
             <div className="rounded-2xl overflow-hidden bg-[#0B081D] border border-[#2A2453] max-h-[460px]">
-              <img
+              <SafeImage
                 src={selectedProject.mediaUrl}
                 alt={selectedProject.title}
                 className="w-full h-full object-contain max-h-[460px] mx-auto"

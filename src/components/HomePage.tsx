@@ -45,10 +45,14 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   const categories = [
-    { name: 'AI Video & Commercials', icon: Video, tool: 'Runway Gen-3, Kling', count: '142 Creators' },
-    { name: 'AI Image & Photography', icon: Image, tool: 'FLUX.1 Pro, Midjourney', count: '280 Creators' },
-    { name: 'AI Influencers & Avatars', icon: Layers, tool: 'FaceID, CLO3D, SDXL', count: '96 Creators' },
-    { name: 'AI Animation & Motion', icon: Wand2, tool: 'ComfyUI, AnimateDiff', count: '118 Creators' }
+    { name: 'Finance & Investing', icon: TrendingUp, tool: 'Midjourney v6.1, Runway Gen-3', count: '6 Creators' },
+    { name: 'Technology & AI', icon: Cpu, tool: 'ComfyUI, FLUX.1 Pro', count: '6 Creators' },
+    { name: 'Education & E-Learning', icon: Wand2, tool: 'Runway Gen-3, ElevenLabs', count: '6 Creators' },
+    { name: 'Fashion & Beauty', icon: Sparkles, tool: 'FLUX.1 Pro, FaceID LoRA', count: '6 Creators' },
+    { name: 'Gaming & Esports', icon: Video, tool: 'Runway Gen-3, Kling AI', count: '6 Creators' },
+    { name: 'Real Estate', icon: Briefcase, tool: 'FLUX.1 Pro, D5 Render', count: '6 Creators' },
+    { name: 'Health & Fitness', icon: TrendingUp, tool: 'Runway Gen-3, Topaz Video', count: '6 Creators' },
+    { name: 'Food & Cooking', icon: Sparkles, tool: 'Midjourney, FLUX.1 Pro', count: '6 Creators' }
   ];
 
   const faqs = [

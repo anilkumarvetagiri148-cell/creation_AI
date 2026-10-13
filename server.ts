@@ -144,9 +144,11 @@ app.get('/api/creators', (req: Request, res: Response) => {
     maxPrice,
     minRating,
     minExperience,
-    sort,
+    experienceLevel,
+    contentFormat,
+    sort = 'recommended',
     page = '1',
-    limit = '9'
+    limit = '12'
   } = req.query as Record<string, string>;
 
   // Filters
@@ -156,17 +158,21 @@ app.get('/api/creators', (req: Request, res: Response) => {
       (c) =>
         c.user.name.toLowerCase().includes(q) ||
         c.profile.title.toLowerCase().includes(q) ||
+        (c.profile.industry && c.profile.industry.toLowerCase().includes(q)) ||
+        (c.profile.specialization && c.profile.specialization.toLowerCase().includes(q)) ||
         c.user.bio.toLowerCase().includes(q) ||
         c.profile.skills.some((s) => s.toLowerCase().includes(q)) ||
         c.profile.aiTools.some((t) => t.toLowerCase().includes(q))
     );
   }
 
-  if (category && category !== 'all') {
+  if (category && category !== 'all' && category !== 'All Creators') {
+    const catLower = category.toLowerCase();
     creators = creators.filter(
       (c) =>
-        c.profile.specialization === category ||
-        c.profile.secondarySpecializations.includes(category as any)
+        (c.profile.industry && c.profile.industry.toLowerCase() === catLower) ||
+        (c.profile.specialization && c.profile.specialization.toLowerCase() === catLower) ||
+        (c.profile.secondarySpecializations && c.profile.secondarySpecializations.some((s) => s.toLowerCase() === catLower))
     );
   }
 
@@ -179,6 +185,14 @@ app.get('/api/creators', (req: Request, res: Response) => {
 
   if (availability && availability !== 'all') {
     creators = creators.filter((c) => c.profile.availability === availability);
+  }
+
+  if (contentFormat && contentFormat !== 'all') {
+    creators = creators.filter((c) => c.profile.contentFormat === contentFormat);
+  }
+
+  if (experienceLevel && experienceLevel !== 'all') {
+    creators = creators.filter((c) => c.profile.experienceLevel === experienceLevel);
   }
 
   if (minPrice) {
@@ -203,16 +217,24 @@ app.get('/api/creators', (req: Request, res: Response) => {
 
   // Sort
   if (sort === 'rating') {
-    creators.sort((a, b) => b.profile.rating - a.profile.rating);
+    creators.sort((a, b) => b.profile.rating - a.profile.rating || b.profile.reviewCount - a.profile.reviewCount);
   } else if (sort === 'price_low') {
     creators.sort((a, b) => a.profile.projectStartingRate - b.profile.projectStartingRate);
   } else if (sort === 'price_high') {
     creators.sort((a, b) => b.profile.projectStartingRate - a.profile.projectStartingRate);
+  } else if (sort === 'newest') {
+    creators.sort((a, b) => new Date(b.user.createdAt).getTime() - new Date(a.user.createdAt).getTime());
   } else if (sort === 'experience') {
     creators.sort((a, b) => b.profile.experienceYears - a.profile.experienceYears);
+  } else if (sort === 'relevance') {
+    creators.sort((a, b) => (b.profile.completedCampaigns || 0) - (a.profile.completedCampaigns || 0));
   } else {
-    // Relevance / Featured
-    creators.sort((a, b) => (b.profile.featured ? 1 : 0) - (a.profile.featured ? 1 : 0));
+    // Recommended (Featured first, then highest rating)
+    creators.sort(
+      (a, b) =>
+        (b.profile.featured ? 1 : 0) - (a.profile.featured ? 1 : 0) ||
+        b.profile.rating - a.profile.rating
+    );
   }
 
   const total = creators.length;

@@ -13,6 +13,7 @@ import {
   NotificationItem,
   CreatorWithProfile
 } from '../src/types/index.js';
+import { generateAllCreatorsSeed } from './seedCreators.js';
 
 interface DatabaseSchema {
   profiles: UserProfile[];
@@ -130,12 +131,16 @@ const initialData: DatabaseSchema = {
     {
       userId: 'creator-1',
       title: 'Senior AI Cinematographer & Runway Specialist',
+      industry: 'Fashion & Beauty',
       specialization: 'AI Video & Commercials',
       secondarySpecializations: ['AI Advertising Creatives', 'AI Storytelling & Narrative'],
       skills: ['Runway Gen-3', 'Kling AI 1.5', 'Luma Dream Machine', 'After Effects', 'Midjourney v6.1', 'Prompt Engineering'],
       aiTools: ['Runway Gen-3', 'Kling AI', 'Midjourney', 'Topaz Video AI', 'ElevenLabs'],
-      hourlyRate: 140,
-      projectStartingRate: 1800,
+      hourlyRate: 4500,
+      projectStartingRate: 35000,
+      currency: 'INR',
+      experienceLevel: 'Expert',
+      contentFormat: 'Video & Motion',
       availability: 'available',
       experienceYears: 4,
       completedCampaigns: 29,
@@ -149,12 +154,16 @@ const initialData: DatabaseSchema = {
     {
       userId: 'creator-2',
       title: 'Lead Photorealistic AI Product Visualizer',
+      industry: 'E-commerce & Product Advertising',
       specialization: 'AI Image & Photography',
       secondarySpecializations: ['AI Advertising Creatives', 'AI Branding & Concept Art'],
       skills: ['FLUX.1 Pro', 'Midjourney v6.1', 'ComfyUI ControlNet', 'Photoshop GenFill', 'Blender Hybrid'],
       aiTools: ['FLUX.1', 'Midjourney', 'ComfyUI', 'Magnific AI', 'Photoshop'],
-      hourlyRate: 120,
-      projectStartingRate: 1200,
+      hourlyRate: 3800,
+      projectStartingRate: 28000,
+      currency: 'INR',
+      experienceLevel: 'Expert',
+      contentFormat: 'Stills & Photography',
       availability: 'available',
       experienceYears: 5,
       completedCampaigns: 34,
@@ -168,12 +177,16 @@ const initialData: DatabaseSchema = {
     {
       userId: 'creator-3',
       title: 'AI Fashion Director & Virtual Avatar Creator',
+      industry: 'Social Media Influencers',
       specialization: 'AI Influencers & Avatars',
       secondarySpecializations: ['AI Image & Photography', 'AI Advertising Creatives'],
       skills: ['Midjourney v6.1', 'Stable Diffusion XL', 'Character Consistency', 'Virtual Try-On', 'CLO3D'],
       aiTools: ['Midjourney', 'SDXL', 'FaceID LoRA', 'Runway Gen-3'],
-      hourlyRate: 110,
-      projectStartingRate: 1500,
+      hourlyRate: 3600,
+      projectStartingRate: 30000,
+      currency: 'INR',
+      experienceLevel: 'Intermediate',
+      contentFormat: 'Video & Motion',
       availability: 'available',
       experienceYears: 3,
       completedCampaigns: 19,
@@ -187,12 +200,16 @@ const initialData: DatabaseSchema = {
     {
       userId: 'creator-4',
       title: 'Procedural ComfyUI Animator & Motion Designer',
+      industry: 'Animation & Motion Graphics',
       specialization: 'AI Animation & Motion',
       secondarySpecializations: ['AI Video & Commercials', 'AI Storytelling & Narrative'],
       skills: ['ComfyUI Custom Nodes', 'AnimateDiff', 'Stable Video Diffusion', 'TouchDesigner', 'LoRA Training'],
       aiTools: ['ComfyUI', 'AnimateDiff', 'SVD', 'Kling AI', 'Premiere Pro'],
-      hourlyRate: 130,
-      projectStartingRate: 1600,
+      hourlyRate: 4000,
+      projectStartingRate: 32000,
+      currency: 'INR',
+      experienceLevel: 'Expert',
+      contentFormat: 'Video & Motion',
       availability: 'busy',
       experienceYears: 4,
       completedCampaigns: 22,
@@ -206,12 +223,16 @@ const initialData: DatabaseSchema = {
     {
       userId: 'creator-5',
       title: 'AI Voice Actor & Soundscape Designer',
+      industry: 'Music & Audio',
       specialization: 'AI Voice & Audio',
       secondarySpecializations: ['AI Advertising Creatives', 'AI Storytelling & Narrative'],
       skills: ['ElevenLabs Voice Synthesis', 'Suno AI', 'Udio Music Gen', 'Reaper DAW', 'Binaural Audio'],
       aiTools: ['ElevenLabs', 'Suno v3.5', 'Udio', 'Audition', 'Izotope RX'],
-      hourlyRate: 95,
-      projectStartingRate: 850,
+      hourlyRate: 3000,
+      projectStartingRate: 24000,
+      currency: 'INR',
+      experienceLevel: 'Intermediate',
+      contentFormat: 'Audio & Voice',
       availability: 'available',
       experienceYears: 3,
       completedCampaigns: 15,
@@ -225,12 +246,16 @@ const initialData: DatabaseSchema = {
     {
       userId: 'creator-6',
       title: 'Sci-Fi Worldbuilder & Narrative Concept Artist',
+      industry: 'Technology & AI',
       specialization: 'AI Branding & Concept Art',
       secondarySpecializations: ['AI Storytelling & Narrative', 'AI Image & Photography'],
       skills: ['Midjourney v6.1', 'FLUX.1 Dev', 'Key Visuals', 'World Architecture', 'Moodboards'],
       aiTools: ['Midjourney', 'FLUX.1', 'Photoshop', 'Krea AI'],
-      hourlyRate: 105,
-      projectStartingRate: 1100,
+      hourlyRate: 4200,
+      projectStartingRate: 34000,
+      currency: 'INR',
+      experienceLevel: 'Intermediate',
+      contentFormat: '3D & Virtual',
       availability: 'available',
       experienceYears: 3,
       completedCampaigns: 17,
@@ -588,16 +613,45 @@ class DatabaseManager {
   }
 
   private loadData(): DatabaseSchema {
+    let currentStore: DatabaseSchema = JSON.parse(JSON.stringify(initialData));
     try {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        return JSON.parse(raw);
+        currentStore = JSON.parse(raw);
       }
     } catch (err) {
       console.warn('Error reading db.json, initializing fresh store:', err);
     }
-    this.saveData(initialData);
-    return JSON.parse(JSON.stringify(initialData));
+
+    // If creators count is below 138, enrich with full diverse categorized creators
+    if (!currentStore.creatorProfiles || currentStore.creatorProfiles.length < 138) {
+      const seed = generateAllCreatorsSeed();
+      // Keep existing non-duplicate profiles
+      const existingProfileIds = new Set(currentStore.profiles.map((p) => p.id));
+      for (const sp of seed.profiles) {
+        if (!existingProfileIds.has(sp.id)) {
+          currentStore.profiles.push(sp);
+        }
+      }
+
+      const existingCreatorIds = new Set(currentStore.creatorProfiles.map((cp) => cp.userId));
+      for (const scp of seed.creatorProfiles) {
+        if (!existingCreatorIds.has(scp.userId)) {
+          currentStore.creatorProfiles.push(scp);
+        }
+      }
+
+      const existingProjectIds = new Set(currentStore.portfolioProjects.map((pj) => pj.id));
+      for (const spj of seed.portfolioProjects) {
+        if (!existingProjectIds.has(spj.id)) {
+          currentStore.portfolioProjects.push(spj);
+        }
+      }
+
+      this.saveData(currentStore);
+    }
+
+    return currentStore;
   }
 
   private saveData(data: DatabaseSchema) {

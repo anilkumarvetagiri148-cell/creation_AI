@@ -15,6 +15,7 @@ import { ReviewModal } from './components/ReviewModal.js';
 import { InviteModal } from './components/InviteModal.js';
 import { SupabaseModal } from './components/SupabaseModal.js';
 import { api } from './services/api.js';
+import { BackgroundDecorations, BackgroundTheme } from './components/BackgroundDecorations.js';
 import {
   UserProfile,
   CreatorWithProfile,
@@ -46,6 +47,22 @@ export default function App() {
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
   const [inviteModalCreator, setInviteModalCreator] = useState<CreatorWithProfile | null>(null);
   const [reviewModalData, setReviewModalData] = useState<{ campaign: Campaign; creatorId: string } | null>(null);
+
+  // Background Atmosphere Theme State
+  const [bgTheme, setBgTheme] = useState<BackgroundTheme>(() => {
+    try {
+      return (localStorage.getItem('creatorconnect_bg_theme') as BackgroundTheme) || 'nebula';
+    } catch {
+      return 'nebula';
+    }
+  });
+
+  const handleThemeChange = (newTheme: BackgroundTheme) => {
+    setBgTheme(newTheme);
+    try {
+      localStorage.setItem('creatorconnect_bg_theme', newTheme);
+    } catch {}
+  };
 
   // Load initial session and app data
   const loadInitialData = async () => {
@@ -166,13 +183,18 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B081D] text-white">
+    <div className={`min-h-screen flex flex-col text-white transition-colors duration-700 theme-${bgTheme} relative selection:bg-[#7C4DFF] selection:text-white`}>
+      {/* Dynamic Ambient Background Canvas & Atmospheric Theme Switcher */}
+      <BackgroundDecorations theme={bgTheme} onThemeChange={handleThemeChange} />
+
       {/* Navigation */}
       <Navbar
         currentUser={currentUser}
         notifications={notifications}
         unreadMessagesCount={unreadMessagesCount}
         currentView={currentView}
+        currentTheme={bgTheme}
+        onThemeChange={handleThemeChange}
         onNavigate={handleNavigate}
         onSwitchDemo={handleSwitchDemo}
         onOpenAuth={() => setIsAuthModalOpen(true)}
